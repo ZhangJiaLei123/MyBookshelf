@@ -47,7 +47,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="你的支持是我更新的动力" />
+                        android:text="本项目forked自MyBookshelf" />
 
                 </LinearLayout>
 
