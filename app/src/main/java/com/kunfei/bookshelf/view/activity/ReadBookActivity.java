@@ -2,6 +2,7 @@
 package com.kunfei.bookshelf.view.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -174,6 +175,14 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     private boolean aloudNextPage;
     private int lastX, lastY;
 
+    private static ReadBookActivity instance = null;
+    public static ReadBookActivity getInstance(){
+//        if(instance != null){ // 当前Activity置于后台用
+//          //  instance.moveTaskToBack(true);
+//        }
+        return instance;
+    }
+
     @Override
     protected ReadBookContract.Presenter initInjector() {
         return new ReadBookPresenter();
@@ -191,6 +200,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         keepScreenRunnable = this::unKeepScreenOn;
         autoPageRunnable = this::nextPage;
         upHpbNextPage = this::upHpbNextPage;
+        instance = this;
     }
 
     @Override
@@ -1790,6 +1800,10 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
         return noteUrl;
     }
 
+    public BookShelfBean getBookShelf(){
+        return mPresenter.getBookShelf();
+    }
+
     @Override
     public Boolean getAdd() {
         return isAdd;
@@ -1904,10 +1918,11 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        instance = null;
         if (batInfoReceiver != null) {
             batInfoReceiver.unregisterThis();
         }
-        ReadAloudService.stop(this);
+       // ReadAloudService.stop(this);
         if (mPageLoader != null) {
             mPageLoader.closeBook();
             mPageLoader = null;

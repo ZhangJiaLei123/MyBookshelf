@@ -32,6 +32,7 @@ import com.kunfei.bookshelf.presenter.BookDetailPresenter;
 import com.kunfei.bookshelf.presenter.BookListPresenter;
 import com.kunfei.bookshelf.presenter.ReadBookPresenter;
 import com.kunfei.bookshelf.presenter.contract.BookListContract;
+import com.kunfei.bookshelf.service.ReadAloudService;
 import com.kunfei.bookshelf.utils.NetworkUtils;
 import com.kunfei.bookshelf.utils.RxUtils;
 import com.kunfei.bookshelf.utils.theme.ATH;
@@ -183,6 +184,21 @@ public class BookListFragment extends MBaseFragment<BookListContract.Presenter> 
                 }
                 BookShelfBean bookShelfBean = bookShelfAdapter.getBooks().get(index);
                 Intent intent = new Intent(getContext(), ReadBookActivity.class);
+                ReadBookActivity bookActivity = ReadBookActivity.getInstance();
+                if(bookActivity != null){ // 打开历史读书
+                    // 如果书籍已打开,就将其置到前台
+                    if(bookActivity.getBookShelf().getName().equals(bookShelfBean.getName())){
+                        intent.setAction(ReadAloudService.ActionReadActivity);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
+                        return;
+                    }
+                    // 不然就关闭之前打开的
+                    ReadAloudService.stop(getContext());
+                    bookActivity.finish();
+                }
+
+                // 打开新的读书
                 intent.putExtra("openFrom", ReadBookPresenter.OPEN_FROM_APP);
                 String key = String.valueOf(System.currentTimeMillis());
                 String bookKey = "book" + key;
