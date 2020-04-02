@@ -123,7 +123,9 @@ public final class FileUtils {
                 if ("primary".equalsIgnoreCase(type)) {
                     return Environment.getExternalStorageDirectory() + "/" + split[1];
                 }
-
+                else if ("08F0-1E19".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
             }
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {

@@ -58,6 +58,11 @@ public class MediaButtonIntentReceiver extends BroadcastReceiver {
         return false;
     }
 
+    /**
+     * 朗读
+     * @param context
+     * @param command
+     */
     private static void readAloud(final Context context, String command) {
         if (!AppActivityManager.getInstance().isExist(ReadBookActivity.class)) {
             Intent intent = new Intent(context, ReadBookActivity.class);

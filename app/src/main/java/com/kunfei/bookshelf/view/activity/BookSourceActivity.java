@@ -395,6 +395,9 @@ public class BookSourceActivity extends MBaseActivity<BookSourceContract.Present
                 .request();
     }
 
+    /**
+     * 网络导入
+     */
     private void importBookSourceOnLine() {
         String cu = ACache.get(this).getAsString("sourceUrl");
         String[] cacheUrls = cu == null ? new String[]{} : cu.split(";");
@@ -402,6 +405,7 @@ public class BookSourceActivity extends MBaseActivity<BookSourceContract.Present
         InputDialog.builder(this)
                 .setDefaultValue("")
                 .setTitle(getString(R.string.input_book_source_url))
+                .setDefaultValue("http://")
                 .setShowDel(true)
                 .setAdapterValues(urlList)
                 .setCallback(new InputDialog.Callback() {

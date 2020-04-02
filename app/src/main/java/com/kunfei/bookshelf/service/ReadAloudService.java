@@ -35,6 +35,7 @@ import com.kunfei.bookshelf.MApplication;
 import com.kunfei.bookshelf.R;
 import com.kunfei.bookshelf.constant.RxBusTag;
 import com.kunfei.bookshelf.help.MediaManager;
+import com.kunfei.bookshelf.view.activity.MainActivity;
 import com.kunfei.bookshelf.view.activity.ReadBookActivity;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class ReadAloudService extends Service {
     public static final String ActionNewReadAloud = "newReadAloud";
     public static final String ActionPauseService = "pauseService";
     public static final String ActionResumeService = "resumeService";
-    private static final String ActionReadActivity = "readActivity";
+    public static final String ActionReadActivity = "readActivity";
     private static final String ActionSetTimer = "updateTimer";
     private static final String ActionSetProgress = "setProgress";
     private static final String ActionUITimerStop = "UITimerStop";
@@ -90,6 +91,11 @@ public class ReadAloudService extends Service {
     private BroadcastReceiver broadcastReceiver;
     private SharedPreferences preference;
     private int speechRate;
+
+    public String getTitle() {
+        return title;
+    }
+
     private String title;
     private String text;
     private boolean fadeTts;
@@ -494,12 +500,32 @@ public class ReadAloudService extends Service {
         }
     }
 
+    /**
+     * 跳转到当前读书页面
+     * @return
+     */
     private PendingIntent getReadBookActivityPendingIntent() {
         Intent intent = new Intent(this, ReadBookActivity.class);
         intent.setAction(ReadAloudService.ActionReadActivity);
         return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    /**
+     * 跳转到书架
+     * @return
+     */
+    private PendingIntent getReadBookMianPendingIntent() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+      //  intent.setAction(ReadAloudService.ActionReadActivity);
+        return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    /**
+     * 服务
+     * @param actionStr
+     * @return
+     */
     private PendingIntent getThisServicePendingIntent(String actionStr) {
         Intent intent = new Intent(this, this.getClass());
         intent.setAction(actionStr);
@@ -543,6 +569,7 @@ public class ReadAloudService extends Service {
         }
         builder.addAction(R.drawable.ic_stop_black_24dp, getString(R.string.stop), getThisServicePendingIntent(ActionDoneService));
         builder.addAction(R.drawable.ic_time_add_24dp, getString(R.string.set_timer), getThisServicePendingIntent(ActionSetTimer));
+        builder.addAction(R.drawable.ic_arrange_white, getString(R.string.bookshelf), getReadBookMianPendingIntent());
         builder.setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                 .setMediaSession(mediaSessionCompat.getSessionToken())
                 .setShowActionsInCompactView(0, 1, 2));
