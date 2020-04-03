@@ -55,7 +55,12 @@ import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> implements FindBookContract.View, OnRecyclerViewListener.OnItemClickListener, OnRecyclerViewListener.OnItemLongClickListener {
+public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
+        implements FindBookContract.View,
+        OnRecyclerViewListener.OnItemClickListener,
+        OnRecyclerViewListener.OnItemLongClickListener,FindLeftAdapter.OnClickListener
+
+{
     @BindView(R.id.ll_content)
     LinearLayout llContent;
     @BindView(R.id.refresh_layout)
@@ -174,14 +179,7 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
         if (rvFindRight == null) return;
         if (isFlexBox()) {
             findKindAdapter = null;
-            findLeftAdapter = new FindLeftAdapter(getActivity(), pos -> {
-                int counts = 0;
-                for (int i = 0; i < pos; i++) {
-                    //position 为点击的position
-                    counts += findRightAdapter.getData().get(i).getChildList().size();
-                }
-                ((ScrollLinearLayoutManger) rightLayoutManager).scrollToPositionWithOffset(counts + pos, 0);
-            });
+            findLeftAdapter = new FindLeftAdapter(getActivity(), this);
             rvFindLeft.setLayoutManager(leftLayoutManager);
             rvFindLeft.setAdapter(findLeftAdapter);
 
@@ -292,6 +290,41 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter> 
             }
         }
     }
+
+    /**
+     * 书源列表单击选择
+     * @param pos
+     */
+    @Override
+    public void click(int pos) {
+        int counts = 0;
+        for (int i = 0; i < pos; i++) {  //position 为点击的position
+            counts += findRightAdapter.getData().get(i).getChildList().size();
+        }
+        ((ScrollLinearLayoutManger) rightLayoutManager).scrollToPositionWithOffset(counts + pos, 0);
+
+    }
+
+    /***
+     * 书源列表长按編輯书源
+     * @param pos
+     */
+    @Override
+    public void longClick(int pos) {
+        String url = ((FindKindGroupBean) findLeftAdapter.getData().get(pos)
+                .getGroupItem().getGroupData() ).getSourceUrl();
+        BookSourceBean sourceBeans2 = BookSourceManager.getBookSourceByUrl(url);
+        SourceEditActivity.startThis(this, sourceBeans2);
+//        findRightAdapter.getData().remove(pos);
+//        findLeftAdapter.getData().remove(pos);
+//
+//        findRightAdapter.notifyDataSetChanged();
+//        findLeftAdapter.notifyDataSetChanged();
+
+
+
+    }
+
 
     @SuppressWarnings("unused")
     public class ScrollLinearLayoutManger extends GridLayoutManager {

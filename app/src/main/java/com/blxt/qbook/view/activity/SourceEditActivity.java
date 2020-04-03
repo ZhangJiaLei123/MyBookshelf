@@ -92,6 +92,8 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
     ATECheckBox cbIsAudio;
     @BindView(R.id.cb_is_enable)
     ATECheckBox cbIsEnable;
+    @BindView(R.id.cb_enable_find)
+    ATECheckBox cbEnableFind;
     @BindView(R.id.tv_edit_find)
     TextView tvEditFind;
     @BindView(R.id.recycler_view)
@@ -286,6 +288,7 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         }
         cbIsAudio.setChecked(Objects.equals(bookSourceBean.getBookSourceType(), BookType.AUDIO));
         cbIsEnable.setChecked(bookSourceBean.getEnable());
+        cbEnableFind.setChecked(bookSourceBean.getVisual());
     }
 
     private void scanBookSource() {
@@ -421,6 +424,7 @@ public class SourceEditActivity extends MBaseActivity<SourceEditContract.Present
         }
         bookSourceBeanN.setSerialNumber(serialNumber);
         bookSourceBeanN.setEnable(cbIsEnable.isChecked());
+        bookSourceBeanN.setVisual(cbEnableFind.isChecked());
         bookSourceBeanN.setBookSourceType(cbIsAudio.isChecked() ? BookType.AUDIO : null);
         return bookSourceBeanN;
     }

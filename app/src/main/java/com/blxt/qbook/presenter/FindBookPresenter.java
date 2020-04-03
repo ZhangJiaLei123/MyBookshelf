@@ -46,6 +46,9 @@ public class FindBookPresenter extends BasePresenterImpl<FindBookContract.View> 
             boolean showAllFind = MApplication.getConfigPreferences().getBoolean("showAllFind", true);
             List<BookSourceBean> sourceBeans = new ArrayList<>(showAllFind ? BookSourceManager.getAllBookSourceBySerialNumber() : BookSourceManager.getSelectedBookSourceBySerialNumber());
             for (BookSourceBean sourceBean : sourceBeans) {
+                if(!sourceBean.getVisual()){
+                    continue;
+                }
                 try {
                     String[] kindA;
                     String findRule;
@@ -75,6 +78,7 @@ public class FindBookPresenter extends BasePresenterImpl<FindBookContract.View> 
                             children.add(findKindBean);
                         }
                         FindKindGroupBean groupBean = new FindKindGroupBean();
+                        groupBean.setSourceUrl(sourceBean.getBookSourceUrl());
                         groupBean.setGroupName(sourceBean.getBookSourceName());
                         groupBean.setGroupTag(sourceBean.getBookSourceUrl());
                         group.add(new RecyclerViewData(groupBean, children, false));

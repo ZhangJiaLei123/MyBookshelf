@@ -38,6 +38,8 @@ public class BookSourceManager {
                 .where(BookSourceBeanDao.Properties.Enable.eq(true))
                 .orderRaw(BookSourceBeanDao.Properties.Weight.columnName + " DESC")
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
+                .orderDesc(BookSourceBeanDao.Properties.Visual)
                 .list();
     }
 
@@ -45,6 +47,8 @@ public class BookSourceManager {
         return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
                 .orderRaw(getBookSourceSort())
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
+                .orderDesc(BookSourceBeanDao.Properties.Visual)
                 .list();
     }
 
@@ -52,12 +56,16 @@ public class BookSourceManager {
         return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
                 .where(BookSourceBeanDao.Properties.Enable.eq(true))
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
+                .orderDesc(BookSourceBeanDao.Properties.Visual)
                 .list();
     }
 
     public static List<BookSourceBean> getAllBookSourceBySerialNumber() {
         return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
+                .orderDesc(BookSourceBeanDao.Properties.Visual)
                 .list();
     }
 
@@ -66,6 +74,8 @@ public class BookSourceManager {
                 .where(BookSourceBeanDao.Properties.Enable.eq(true))
                 .where(BookSourceBeanDao.Properties.BookSourceGroup.like("%" + group + "%"))
                 .orderRaw(BookSourceBeanDao.Properties.Weight.columnName + " DESC")
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
+                .orderDesc(BookSourceBeanDao.Properties.Visual)
                 .list();
     }
 
@@ -117,6 +127,12 @@ public class BookSourceManager {
     public static void saveBookSource(BookSourceBean bookSourceBean) {
         if (bookSourceBean != null) {
             DbHelper.getDaoSession().getBookSourceBeanDao().insertOrReplace(bookSourceBean);
+        }
+    }
+
+    public static void upBookSource(BookSourceBean bookSourceBean) {
+        if (bookSourceBean != null) {
+            DbHelper.getDaoSession().getBookSourceBeanDao().update(bookSourceBean);
         }
     }
 

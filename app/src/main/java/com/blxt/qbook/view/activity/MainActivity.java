@@ -103,7 +103,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         if (savedInstanceState != null) {
             resumed = savedInstanceState.getBoolean("resumed");
         }
-        group = preferences.getInt("bookshelfGroup", 0);
+        group = preferences.getInt("bookshelfGroup", 0); 
         super.onCreate(savedInstanceState);
     }
 

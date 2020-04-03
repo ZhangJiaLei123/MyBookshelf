@@ -35,6 +35,10 @@ public class FindLeftAdapter extends RecyclerView.Adapter<FindLeftAdapter.MyView
         notifyDataSetChanged();
     }
 
+    public List<RecyclerViewData> getData(){
+        return data;
+    }
+
     public void upShowIndex(int showIndex) {
         if (showIndex != this.showIndex) {
             int oldIndex = this.showIndex;
@@ -68,6 +72,14 @@ public class FindLeftAdapter extends RecyclerView.Adapter<FindLeftAdapter.MyView
                 onClickListener.click(showIndex);
             }
         });
+        myViewHolder.tvSourceName.setOnLongClickListener(v -> {
+            if (onClickListener != null) {
+                int oldIndex = showIndex;
+                showIndex = i;
+                onClickListener.longClick(oldIndex);
+            }
+            return false;
+        });
     }
 
     @Override
@@ -86,6 +98,7 @@ public class FindLeftAdapter extends RecyclerView.Adapter<FindLeftAdapter.MyView
 
     public interface OnClickListener {
         void click(int pos);
+        void longClick(int pos);
     }
 
 }

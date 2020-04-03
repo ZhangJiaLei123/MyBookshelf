@@ -44,6 +44,13 @@
             android:checked="false"
             android:text="@string/audio" />
 
+        <com.blxt.qbook.widget.views.ATECheckBox
+            android:id="@+id/cb_enable_find"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/enable_find" />
+
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"

@@ -1,6 +1,7 @@
 package com.blxt.qbook.bean;
 
 public class FindKindGroupBean {
+    private String sourceUrl;
     private String groupName;
     private String groupTag;
 
@@ -20,4 +21,11 @@ public class FindKindGroupBean {
         this.groupTag = groupTag;
     }
 
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
 }
