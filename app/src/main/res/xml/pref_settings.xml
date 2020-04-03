@@ -40,6 +40,12 @@
             android:summary="@string/ps_show_all_find"
             android:title="@string/pt_show_all_find" />
 
+        <com.blxt.qbook.widget.prefs.ATESwitchPreference
+            android:defaultValue="true"
+            android:key="invisibleFind"
+            android:summary="@string/ps_longchinck_gone"
+            android:title="@string/pt_longchinck_gone" />
+
         <Preference
             android:key="clearCache"
             android:title="@string/clear_cache" />

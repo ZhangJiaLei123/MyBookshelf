@@ -320,8 +320,18 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
         String url = ((FindKindGroupBean) findLeftAdapter.getData().get(pos)
                 .getGroupItem().getGroupData() ).getSourceUrl();
         BookSourceBean sourceBeans2 = BookSourceManager.getBookSourceByUrl(url);
-        SourceEditActivity.startThis(this, sourceBeans2);
-
+        boolean gone = MApplication.getConfigPreferences().getBoolean("invisibleFind", true);
+        if(!gone || !sourceBeans2.getVisual()){
+            SourceEditActivity.startThis(this, sourceBeans2);
+        }
+        else{ 
+            findLeftAdapter.getData().remove(pos);
+            findRightAdapter.getData().remove(pos);
+            findLeftAdapter.notifyDataSetChanged();
+            findRightAdapter.notifyDataSetChanged();
+            sourceBeans2.setVisual(false);
+            BookSourceManager.upBookSource(sourceBeans2);
+        }
     }
 
     /**
