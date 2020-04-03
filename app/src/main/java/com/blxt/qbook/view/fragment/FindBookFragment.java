@@ -113,6 +113,9 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
         initRecyclerView();
     }
 
+    public FindBookPresenter getPresenter(){
+        return (FindBookPresenter)mPresenter;
+    }
     /**
      * 首次逻辑操作
      */
@@ -122,6 +125,9 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
         refreshData();
     }
 
+    /**
+     * 刷新
+     */
     public void refreshData() {
         if (mPresenter != null) {
             mPresenter.initData();
@@ -315,16 +321,16 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
                 .getGroupItem().getGroupData() ).getSourceUrl();
         BookSourceBean sourceBeans2 = BookSourceManager.getBookSourceByUrl(url);
         SourceEditActivity.startThis(this, sourceBeans2);
-//        findRightAdapter.getData().remove(pos);
-//        findLeftAdapter.getData().remove(pos);
-//
-//        findRightAdapter.notifyDataSetChanged();
-//        findLeftAdapter.notifyDataSetChanged();
-
-
 
     }
 
+    /**
+     * 设置是否仅显示隐藏书源
+     * @param showGoneFindOnly
+     */
+    public void setShowGoneFindOnly(boolean showGoneFindOnly) {
+        ((FindBookPresenter)mPresenter).setShowGoneFindOnly(showGoneFindOnly);
+    }
 
     @SuppressWarnings("unused")
     public class ScrollLinearLayoutManger extends GridLayoutManager {
@@ -376,4 +382,5 @@ public class FindBookFragment extends MBaseFragment<FindBookContract.Presenter>
         }
 
     }
+
 }

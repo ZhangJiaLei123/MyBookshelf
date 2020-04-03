@@ -55,6 +55,7 @@ public class BookSourceManager {
     public static List<BookSourceBean> getSelectedBookSourceBySerialNumber() {
         return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
                 .where(BookSourceBeanDao.Properties.Enable.eq(true))
+                .where(BookSourceBeanDao.Properties.Visual.eq(true))
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
                 .orderDesc(BookSourceBeanDao.Properties.Enable)
                 .orderDesc(BookSourceBeanDao.Properties.Visual)
@@ -63,9 +64,22 @@ public class BookSourceManager {
 
     public static List<BookSourceBean> getAllBookSourceBySerialNumber() {
         return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
+                .where(BookSourceBeanDao.Properties.Visual.eq(true))
                 .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
                 .orderDesc(BookSourceBeanDao.Properties.Enable)
                 .orderDesc(BookSourceBeanDao.Properties.Visual)
+                .list();
+    }
+
+    /**
+     * 获取隐藏的书源
+     * @return
+     */
+    public static List<BookSourceBean> getGoneBookSourceBySerialNumber() {
+        return DbHelper.getDaoSession().getBookSourceBeanDao().queryBuilder()
+                .where(BookSourceBeanDao.Properties.Visual.eq(false))
+                .orderAsc(BookSourceBeanDao.Properties.SerialNumber)
+                .orderDesc(BookSourceBeanDao.Properties.Enable)
                 .list();
     }
 

@@ -35,62 +35,27 @@ public class FindBookPresenter extends BasePresenterImpl<FindBookContract.View> 
     private Disposable disposable;
     private AnalyzeRule analyzeRule;
     private String findError = "发现规则语法错误";
+    public boolean showGoneFindOnly; // 显示隐藏的书源
 
     @SuppressWarnings("unchecked")
     @Override
     public void initData() {
         if (disposable != null) return;
-        ACache aCache = ACache.get(mView.getContext(), "findCache");
+
         Single.create((SingleOnSubscribe<List<RecyclerViewData>>) e -> {
+            List<BookSourceBean> sourceBeans = null;
+            ACache aCache = ACache.get(mView.getContext(), "findCache");
             List<RecyclerViewData> group = new ArrayList<>();
             boolean showAllFind = MApplication.getConfigPreferences().getBoolean("showAllFind", true);
-            List<BookSourceBean> sourceBeans = new ArrayList<>(showAllFind ? BookSourceManager.getAllBookSourceBySerialNumber() : BookSourceManager.getSelectedBookSourceBySerialNumber());
-            for (BookSourceBean sourceBean : sourceBeans) {
-                if(!sourceBean.getVisual()){
-                    continue;
-                }
-                try {
-                    String[] kindA;
-                    String findRule;
-                    if (!TextUtils.isEmpty(sourceBean.getRuleFindUrl()) && !sourceBean.containsGroup(findError)) {
-                        boolean isJsAndCache = sourceBean.getRuleFindUrl().startsWith("<js>");
-                        if (isJsAndCache) {
-                            findRule = aCache.getAsString(sourceBean.getBookSourceUrl());
-                            if (TextUtils.isEmpty(findRule)) {
-                                String jsStr = sourceBean.getRuleFindUrl().substring(4, sourceBean.getRuleFindUrl().lastIndexOf("<"));
-                                findRule = evalJS(jsStr, sourceBean.getBookSourceUrl()).toString();
-                            } else {
-                                isJsAndCache = false;
-                            }
-                        } else {
-                            findRule = sourceBean.getRuleFindUrl();
-                        }
-                        kindA = findRule.split("(&&|\n)+");
-                        List<FindKindBean> children = new ArrayList<>();
-                        for (String kindB : kindA) {
-                            if (kindB.trim().isEmpty()) continue;
-                            String[] kind = kindB.split("::");
-                            FindKindBean findKindBean = new FindKindBean();
-                            findKindBean.setGroup(sourceBean.getBookSourceName());
-                            findKindBean.setTag(sourceBean.getBookSourceUrl());
-                            findKindBean.setKindName(kind[0]);
-                            findKindBean.setKindUrl(kind[1]);
-                            children.add(findKindBean);
-                        }
-                        FindKindGroupBean groupBean = new FindKindGroupBean();
-                        groupBean.setSourceUrl(sourceBean.getBookSourceUrl());
-                        groupBean.setGroupName(sourceBean.getBookSourceName());
-                        groupBean.setGroupTag(sourceBean.getBookSourceUrl());
-                        group.add(new RecyclerViewData(groupBean, children, false));
-                        if (isJsAndCache) {
-                            aCache.put(sourceBean.getBookSourceUrl(), findRule);
-                        }
-                    }
-                } catch (Exception exception) {
-                    sourceBean.addGroup(findError);
-                    BookSourceManager.addBookSource(sourceBean);
-                }
+            if(showGoneFindOnly){
+                sourceBeans = new ArrayList<>(BookSourceManager.getGoneBookSourceBySerialNumber() );
             }
+            else{
+                sourceBeans = new ArrayList<>(showAllFind ?
+                        BookSourceManager.getAllBookSourceBySerialNumber()
+                        : BookSourceManager.getSelectedBookSourceBySerialNumber());
+            }
+            group = getViewData(aCache, sourceBeans);
             e.onSuccess(group);
         })
                 .compose(RxUtils::toSimpleSingle)
@@ -143,4 +108,66 @@ public class FindBookPresenter extends BasePresenterImpl<FindBookContract.View> 
 
     }
 
+
+    /**
+     * 获取发现书源的RecyclerViewData
+     * @param aCache
+     * @param sourceBeans
+     * @return
+     */
+    private List<RecyclerViewData> getViewData(ACache aCache, List<BookSourceBean> sourceBeans){
+        List<RecyclerViewData> group = new ArrayList<>();
+        for (BookSourceBean sourceBean : sourceBeans) {
+            try {
+                String[] kindA;
+                String findRule;
+                if (!TextUtils.isEmpty(sourceBean.getRuleFindUrl()) && !sourceBean.containsGroup(findError)) {
+                    boolean isJsAndCache = sourceBean.getRuleFindUrl().startsWith("<js>");
+                    if (isJsAndCache) {
+                        findRule = aCache.getAsString(sourceBean.getBookSourceUrl());
+                        if (TextUtils.isEmpty(findRule)) {
+                            String jsStr = sourceBean.getRuleFindUrl().substring(4, sourceBean.getRuleFindUrl().lastIndexOf("<"));
+                            findRule = evalJS(jsStr, sourceBean.getBookSourceUrl()).toString();
+                        } else {
+                            isJsAndCache = false;
+                        }
+                    } else {
+                        findRule = sourceBean.getRuleFindUrl();
+                    }
+                    kindA = findRule.split("(&&|\n)+");
+                    List<FindKindBean> children = new ArrayList<>();
+                    for (String kindB : kindA) {
+                        if (kindB.trim().isEmpty()) continue;
+                        String[] kind = kindB.split("::");
+                        FindKindBean findKindBean = new FindKindBean();
+                        findKindBean.setGroup(sourceBean.getBookSourceName());
+                        findKindBean.setTag(sourceBean.getBookSourceUrl());
+                        findKindBean.setKindName(kind[0]);
+                        findKindBean.setKindUrl(kind[1]);
+                        children.add(findKindBean);
+                    }
+                    FindKindGroupBean groupBean = new FindKindGroupBean();
+                    groupBean.setSourceUrl(sourceBean.getBookSourceUrl());
+                    groupBean.setGroupName(sourceBean.getBookSourceName());
+                    groupBean.setGroupTag(sourceBean.getBookSourceUrl());
+                    group.add(new RecyclerViewData(groupBean, children, false));
+                    if (isJsAndCache) {
+                        aCache.put(sourceBean.getBookSourceUrl(), findRule);
+                    }
+                }
+            } catch (Exception exception) {
+                sourceBean.addGroup(findError);
+                BookSourceManager.addBookSource(sourceBean);
+            }
+        }
+        return group;
+    }
+
+    public boolean isShowGoneFindOnly() {
+        return showGoneFindOnly;
+    }
+
+    public void setShowGoneFindOnly(boolean showGoneFindOnly) {
+        this.showGoneFindOnly = showGoneFindOnly;
+    }
 }

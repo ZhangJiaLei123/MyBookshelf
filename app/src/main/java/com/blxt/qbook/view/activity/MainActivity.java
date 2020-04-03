@@ -31,6 +31,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
+import com.blxt.qbook.service.ReadAloudService;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
@@ -103,7 +104,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
         if (savedInstanceState != null) {
             resumed = savedInstanceState.getBoolean("resumed");
         }
-        group = preferences.getInt("bookshelfGroup", 0); 
+        group = preferences.getInt("bookshelfGroup", 0);
         super.onCreate(savedInstanceState);
     }
 
@@ -145,6 +146,23 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
             preferences.edit()
                     .putString("shared_url", "")
                     .apply();
+        }
+        Intent intent = getIntent();
+        if(ReadAloudService.running){ // 如果真在朗读,就进入书架
+//            String action = intent.getAction();
+//            if("书架".equals(action)){
+//            }
+            return;
+        }
+        else{
+            // 如果书籍已打开,就将其置到前台
+            ReadBookActivity bookActivity = ReadBookActivity.getInstance();
+            if (bookActivity != null) { // 打开历史读书
+                intent = new Intent(getContext(), ReadBookActivity.class);
+                intent.setAction(ReadAloudService.ActionReadActivity);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
         }
     }
 
@@ -290,17 +308,38 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
      */
     private void showFindMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
-        popupMenu.getMenu().add(0, 0, 0, getString(R.string.switch_display_style));
-        popupMenu.getMenu().add(0, 0, 1, getString(R.string.clear_find_cache));
+        popupMenu.getMenu().add(0, 0, 0, getString(R.string.find));
+        popupMenu.getMenu().add(0, 0, 1, getString(R.string.show_gone_find));
+        popupMenu.getMenu().add(0, 0, 2, getString(R.string.clear_find_cache));
+        popupMenu.getMenu().add(0, 0, 3, getString(R.string.switch_display_style));
         boolean findTypeIsFlexBox = preferences.getBoolean("findTypeIsFlexBox", true);
         boolean showFindLeftView = preferences.getBoolean("showFindLeftView", true);
         if (findTypeIsFlexBox) {
-            popupMenu.getMenu().add(0, 0, 2, showFindLeftView ? "隐藏左侧栏" : "显示左侧栏");
+            popupMenu.getMenu().add(0, 0, 4, showFindLeftView ? "隐藏左侧栏" : "显示左侧栏");
         }
         popupMenu.setOnMenuItemClickListener(menuItem -> {
             FindBookFragment findBookFragment = getFindFragment();
             switch (menuItem.getOrder()) {
-                case 0:
+                case 0: // 显示所有书源
+                    if (findBookFragment != null) {
+                        findBookFragment.setShowGoneFindOnly(false);
+                        findBookFragment.refreshData();
+                    }
+                    break;
+                case 1: // 显示隐藏发现
+                    if (findBookFragment != null) {
+                        findBookFragment.setShowGoneFindOnly(true);
+                        findBookFragment.refreshData();
+                    }
+                    break;
+
+                case 2:
+                    ACache.get(this, "findCache").clear();
+                    if (findBookFragment != null) {
+                        findBookFragment.refreshData();
+                    }
+                    break;
+                case 3:
                     preferences.edit()
                             .putBoolean("findTypeIsFlexBox", !findTypeIsFlexBox)
                             .apply();
@@ -308,13 +347,7 @@ public class MainActivity extends BaseTabActivity<MainContract.Presenter> implem
                         findBookFragment.upStyle();
                     }
                     break;
-                case 1:
-                    ACache.get(this, "findCache").clear();
-                    if (findBookFragment != null) {
-                        findBookFragment.refreshData();
-                    }
-                    break;
-                case 2:
+                case 4:
                     preferences.edit()
                             .putBoolean("showFindLeftView", !showFindLeftView)
                             .apply();

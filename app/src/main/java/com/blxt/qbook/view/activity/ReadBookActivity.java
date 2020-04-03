@@ -1941,6 +1941,7 @@ public class ReadBookActivity extends MBaseActivity<ReadBookContract.Presenter> 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
+        instance = null;
         Backup.INSTANCE.autoBack();
         super.finish();
     }

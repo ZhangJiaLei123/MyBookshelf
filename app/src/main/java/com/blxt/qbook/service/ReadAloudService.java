@@ -517,7 +517,7 @@ public class ReadAloudService extends Service {
     private PendingIntent getReadBookMianPendingIntent() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      //  intent.setAction(ReadAloudService.ActionReadActivity);
+        intent.setAction("书架");
         return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 

@@ -454,7 +454,8 @@
     <string name="cannot_empty">输入不能为空</string>
     <string name="clear_find_cache">清空发现缓存</string>
     <string name="edit_find">编辑发现</string>
-    <string name="enable_find">启用发现</string>
+    <string name="is_visible">发现可见</string>
+    <string name="show_gone_find">显示隐藏的源</string>
     <string name="change_icon_summary">切换软件显示在桌面的图标</string>
     <string name="show_enabled">显示勾选</string>
     <string name="to_lh">扩展到刘海</string>
